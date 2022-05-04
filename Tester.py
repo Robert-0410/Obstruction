@@ -5,16 +5,25 @@ import sys
 
 import console as console
 
-
 # Represents the participants playing against each other (Human, AI)
-from Board import Game
+from Board import start_game_state
 
 
+# Represents the participants of the game Obstruction
 class Player:
     def __init__(self, player: int, is_ai: bool):
         self.player = player
         self.player_id = assign_player_id(player)
         self.is_ai = is_ai
+
+
+# TODO class: Game, represents entire game and any state that will be coupled
+class Game:
+    def __init__(self, player1: Player, player2: Player):
+        self.player1 = player1
+        self.player2 = player2
+        self.current_board_state = start_game_state()
+        self.is_game_over = False
 
 
 # assigns the character that player will use to occupy space on the game board, X is Max and O is Min
@@ -27,6 +36,18 @@ def assign_player_id(player: int):
         console.error("Player ID was not assigned to X or O.")
         return 'err'
     return output
+
+
+# Conducts player move depending on if human or AI
+def conduct_move(game: Game, player: Player):
+    # human move
+    if not player.is_ai:
+        print("call function to conduct human move")
+        return False
+    else:
+        print("call function to conduct AI move")
+        return True
+    # TODO needs to return if move ends game
 
 
 def run():
@@ -62,6 +83,12 @@ def run():
 
             game = Game(player1, player2)
             # TODO continue here getting to the point of proper move sequencing between players
+            while not game.is_game_over:
+                print("Entered while loop, line 86")
+                # ask for move, move method should return if player had a successful move to know if game should be
+                # terminated move should update game.is_game_over
+                game.is_game_over = conduct_move(game, player1)
+                game.is_game_over = conduct_move(game, player2)
 
 
 # TODO if debug tool is needed call debug_mode() -> need to write still
