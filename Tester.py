@@ -2,11 +2,8 @@
 
 # TODO start here by taking command line arguments and set up the move sequence with single action AI outputting "Moved"
 import sys
-
 import console as console
-
-# Represents the participants playing against each other (Human, AI)
-from Board import start_game_state
+from Board import State
 
 
 # Represents the participants of the game Obstruction
@@ -22,7 +19,7 @@ class Game:
     def __init__(self, player1: Player, player2: Player, search_method):
         self.player1 = player1
         self.player2 = player2
-        self.current_board_state = start_game_state()  # TODO, might make an object for the state of the game
+        self.board_state = State()  # TODO, might make an object for the state of the game
         self.is_game_over = False
         self.ai_search_method = search_method
 
