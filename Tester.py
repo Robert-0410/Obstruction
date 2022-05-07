@@ -3,7 +3,7 @@
 # TODO start here by taking command line arguments and set up the move sequence with single action AI outputting "Moved"
 import sys
 import console as console
-from Board import State
+from Board import State, get_mapping_to_index
 
 
 # Represents the participants of the game Obstruction
@@ -14,7 +14,7 @@ class Player:
         self.is_ai = is_ai
 
 
-# TODO class: Game, represents entire game and any state that will be coupled
+# represents entire game and any state that will be coupled
 class Game:
     def __init__(self, player1: Player, player2: Player, search_method):
         self.player1 = player1
@@ -46,9 +46,10 @@ def verify_human_input(human_input: list, game: Game):
         if int(i) > 5 or int(i) < 0:
             return False
         check += i
-    x = game.board_state.mapping_to_index[check]
+    #  x = game.board_state.mapping_to_index[check]
+    x = get_mapping_to_index()[check]
     index = x.pop()
-    if index not in game.board_state.available_indexes:  # TODO test that game does not allow placement of invalid location
+    if index not in game.board_state.available_indexes:
         return False
     return True
 
@@ -68,6 +69,7 @@ def conduct_move(game: Game, player: Player):
         move_location = ''
         for i in move_coordinates:
             move_location += i
+        game.board_state.place_symbol_and_update_state(move_location, player.player_id)
         # TODO need to pass to place_symbol_and_update_state(); but first make sure that it is a valid move
         return True  # TODO temp return: needs to be a boolean that signals if the game is over or not
     else:
@@ -123,16 +125,17 @@ def run():
 # TODO if debug tool is needed call debug_mode() -> need to write still
 def debug_run():
     search_method = 'MM'
-    player1 = Player(1, True)  # False means not AI
+    player1 = Player(1, False)  # False means not AI
     player2 = Player(2, False)
 
     game = Game(player1, player2, search_method)
     while not game.is_game_over:
-        print("Entered while loop, line 90")
         # ask for move, move method should return if player had a successful move to know if game should be
         # terminated move should update game.is_game_over
         game.is_game_over = conduct_move(game, player1)
+        game.board_state.display_current_state()
         game.is_game_over = conduct_move(game, player2)
+        game.board_state.display_current_state()
 
 
 # run()

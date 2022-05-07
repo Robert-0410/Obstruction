@@ -10,7 +10,8 @@ class State:
 
     def place_symbol_and_update_state(self, location, symbol):
         # play
-        x = self.mapping_to_index[location]
+        #x = self.mapping_to_index[location]
+        x = get_mapping_to_index()[location]
         index = x.pop()
         s = list(self.state)
         s[index] = symbol
