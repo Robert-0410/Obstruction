@@ -6,15 +6,30 @@ class State:
         self.state = start_game_state()
         self.adjacent = get_adjacent_mapping()
         self.available_indexes = set_initial_indexes()
-        # TODO need to also hold the amount remaining open spaces and what indexes
+        self.mapping_to_index = get_mapping_to_index()
 
-    # def place_symbol(self): TODO implement, will place respective symbol and remove adjacent spaces out of play
+    def place_symbol_and_update_state(self, location, symbol):
+        # play
+        x = self.mapping_to_index[location]
+        index = x.pop()
+        s = list(self.state)
+        s[index] = symbol
+        self.available_indexes.remove(index)
+        for i in self.adjacent[index]:
+            if i in self.available_indexes:
+                s[i] = '/'
+                self.available_indexes.remove(i)
+        output = ''
+        for i in s:
+            output += i
+        self.state = output
 
     def display_current_state(self):
         index = 0
         for i in range(6):
             for j in range(6):
                 print(self.state[index], end=' ')
+                index += 1
             print()
 
 
@@ -28,6 +43,51 @@ def set_initial_indexes():
     output = set()
     for i in range(36):
         output.add(i)
+    return output
+
+
+# Mapping needed to place symbol in correct position
+def get_mapping_to_index():
+    # row 0 - 5
+    # col 0 - 5
+    output = {
+        '00': {0},
+        '01': {1},
+        '02': {2},
+        '03': {3},
+        '04': {4},
+        '05': {5},
+        '10': {6},
+        '11': {7},
+        '12': {8},
+        '13': {9},
+        '14': {10},
+        '15': {11},
+        '20': {12},
+        '21': {13},
+        '22': {14},
+        '23': {15},
+        '24': {16},
+        '25': {17},
+        '30': {18},
+        '31': {19},
+        '32': {20},
+        '33': {21},
+        '34': {22},
+        '35': {23},
+        '40': {24},
+        '41': {25},
+        '42': {26},
+        '43': {27},
+        '44': {28},
+        '45': {29},
+        '50': {30},
+        '51': {31},
+        '52': {32},
+        '53': {33},
+        '54': {34},
+        '55': {35}
+    }
     return output
 
 
@@ -85,10 +145,24 @@ def get_adjacent_mapping():
     }
     return output
 
-
 # TODO class: GameState not sure if I need too
 # TODO class: Snapshot, snapshot of what the game will look like with specific move
 # TODO class: Tile, individual positions that make up the board game
 
-test = State()
-test.display_current_state()
+#  game = State()
+#  game.display_current_state()
+#  game.place_symbol_and_update_state('00', 'X')
+#  print("placed symbol")
+#  game.display_current_state()
+#  print("Number of available places: ", len(game.available_indexes))
+#  print(game.available_indexes)
+#  game.place_symbol_and_update_state('02', 'O')
+#  print("placed symbol")
+#  game.display_current_state()
+#  print("Number of available places: ", len(game.available_indexes))
+#  print(game.available_indexes)
+#  game.place_symbol_and_update_state('21', 'X')
+#  print("placed symbol")
+#  game.display_current_state()
+#  print("Number of available places: ", len(game.available_indexes))
+#  print(game.available_indexes)

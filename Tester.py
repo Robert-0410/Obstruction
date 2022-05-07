@@ -37,13 +37,19 @@ def assign_player_id(player: int):
 
 
 # Verify human input is correct TODO need to check for letters, currently breaks with input such as lkdfh
-def verify_human_input(human_input: list):
+def verify_human_input(human_input: list, game: Game):
     if len(human_input) > 2:
         return False
 
+    check = ''
     for i in human_input:
-        if int(i) > 5:
+        if int(i) > 5 or int(i) < 0:
             return False
+        check += i
+    x = game.board_state.mapping_to_index[check]
+    index = x.pop()
+    if index not in game.board_state.available_indexes:  # TODO test that game does not allow placement of invalid location
+        return False
     return True
 
 
@@ -54,13 +60,15 @@ def conduct_move(game: Game, player: Player):
         # Get human player input
         raw_input = input("Input format row/column ex: 3/4: ")
         move_coordinates = raw_input.split('/')
-        correct_input = verify_human_input(move_coordinates)
+        correct_input = verify_human_input(move_coordinates, game)
         while not correct_input:
             raw_input = input("Input format row/column ex: 3/4: ")
             move_coordinates = raw_input.split('/')
-            correct_input = verify_human_input(move_coordinates)
-        # pass to function that places mark and alters the state accordingly
-        print(move_coordinates)
+            correct_input = verify_human_input(move_coordinates, game)
+        move_location = ''
+        for i in move_coordinates:
+            move_location += i
+        # TODO need to pass to place_symbol_and_update_state(); but first make sure that it is a valid move
         return True  # TODO temp return: needs to be a boolean that signals if the game is over or not
     else:
         print("call function to conduct AI move")
