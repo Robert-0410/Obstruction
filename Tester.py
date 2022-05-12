@@ -73,6 +73,7 @@ def conduct_move(game: Game, player: Player):
         # TODO need to pass to place_symbol_and_update_state(); but first make sure that it is a valid move
         return True  # TODO temp return: needs to be a boolean that signals if the game is over or not
     else:
+        # TODO call respective algorithm
         print("call function to conduct AI move")
         # if game.search_method = MM call that algorithm
         # else call the AB algorithm
