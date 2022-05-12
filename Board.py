@@ -5,12 +5,10 @@ class State:
     def __init__(self):
         self.state = start_game_state()
         self.adjacent = get_adjacent_mapping()
-        self.available_indexes = set_initial_indexes()
         self.mapping_to_index = get_mapping_to_index()
+        self.available_indexes = set_initial_indexes()
 
     def place_symbol_and_update_state(self, location, symbol):
-        # play
-        #  x = self.mapping_to_index[location]
         x = get_mapping_to_index()[location]
         index = x.pop()
         s = list(self.state)

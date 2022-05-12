@@ -4,22 +4,23 @@
 import sys
 import console as console
 from Board import State, get_mapping_to_index
+from Solver import Minimax
 
 
 # Represents the participants of the game Obstruction
 class Player:
     def __init__(self, player: int, is_ai: bool):
-        self.player = player
+        self.player_num = player
         self.player_id = assign_player_id(player)
         self.is_ai = is_ai
 
 
-# represents entire game and any state that will be coupled
+# represents entire game and any state that will be coupled Player 1: MAX, 2: MIN
 class Game:
     def __init__(self, player1: Player, player2: Player, search_method):
         self.player1 = player1
         self.player2 = player2
-        self.board_state = State()  # TODO, might make an object for the state of the game
+        self.board_state = State()
         self.is_game_over = False
         self.ai_search_method = search_method
 
@@ -70,14 +71,32 @@ def conduct_move(game: Game, player: Player):
         for i in move_coordinates:
             move_location += i
         game.board_state.place_symbol_and_update_state(move_location, player.player_id)
-        # TODO need to pass to place_symbol_and_update_state(); but first make sure that it is a valid move
-        return True  # TODO temp return: needs to be a boolean that signals if the game is over or not
+        game_over_flag = len(game.board_state.available_indexes)
+
+        if game_over_flag == 0:
+            return True
+        else:
+            return False
     else:
         # TODO call respective algorithm
         print("call function to conduct AI move")
-        # if game.search_method = MM call that algorithm
-        # else call the AB algorithm
-        return False  # TODO needs to return if move ends game
+        if game.ai_search_method == 'MM':
+            # TODO call algorithm to conduct ai move, return statements in if else are temp
+            # make algo object
+            plan_move = Minimax()
+            # call game.board_state.place_symbol_and_update_state()
+            return False
+        elif game.ai_search_method == 'AB':
+            # TODO call algorithm to conduct ai move
+            # make algo object
+            # call game.board_state.place_symbol_and_update_state()
+            return False
+        # TODO implement block below once at least one algo is ready for testing
+        # call game_over_flag = len(game.board_state.available_indexes)
+        # if game_over_flag == 0:
+            # return True
+        # else:
+            # return False
 
 
 def run():
@@ -131,10 +150,11 @@ def debug_run():
 
     game = Game(player1, player2, search_method)
     while not game.is_game_over:
-        # ask for move, move method should return if player had a successful move to know if game should be
-        # terminated move should update game.is_game_over
+        # First player move AKA MAX
         game.is_game_over = conduct_move(game, player1)
         game.board_state.display_current_state()
+
+        # Second player move AKA MIN
         game.is_game_over = conduct_move(game, player2)
         game.board_state.display_current_state()
 
