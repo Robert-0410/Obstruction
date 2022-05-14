@@ -1,6 +1,9 @@
 # Models the game board and pieces that compose it
 
 # Representation of the actual game state for the game of obstruction.
+import copy
+
+
 class State:
     def __init__(self):
         self.state = start_game_state()
@@ -30,6 +33,16 @@ class State:
                 print(self.state[index], end=' ')
                 index += 1
             print()
+
+
+# Helper to go backwards in the mapping to the indexes
+def get_key_to_index(val: int):
+    for key, value in get_mapping_to_index().items():
+        index = value.pop()
+        if val == index:
+            return key
+
+    return 'err'
 
 
 # return the initial game state of the game
@@ -143,25 +156,3 @@ def get_adjacent_mapping():
         35: {28, 29, 34}
     }
     return output
-
-# TODO class: GameState not sure if I need too
-# TODO class: Snapshot, snapshot of what the game will look like with specific move
-# TODO class: Tile, individual positions that make up the board game
-
-#  game = State()
-#  game.display_current_state()
-#  game.place_symbol_and_update_state('00', 'X')
-#  print("placed symbol")
-#  game.display_current_state()
-#  print("Number of available places: ", len(game.available_indexes))
-#  print(game.available_indexes)
-#  game.place_symbol_and_update_state('02', 'O')
-#  print("placed symbol")
-#  game.display_current_state()
-#  print("Number of available places: ", len(game.available_indexes))
-#  print(game.available_indexes)
-#  game.place_symbol_and_update_state('21', 'X')
-#  print("placed symbol")
-#  game.display_current_state()
-#  print("Number of available places: ", len(game.available_indexes))
-#  print(game.available_indexes)
