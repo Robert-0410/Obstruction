@@ -4,7 +4,7 @@
 import sys
 import console as console
 from Board import State, get_mapping_to_index
-from Solver import Minimax
+# from Solver import Minimax
 
 
 # Represents the participants of the game Obstruction
@@ -83,7 +83,7 @@ def conduct_move(game: Game, player: Player):
         if game.ai_search_method == 'MM':
             # TODO call algorithm to conduct ai move, return statements in if else are temp
             # make algo object
-            plan_move = Minimax()
+            #plan_move = Minimax()
             # call game.board_state.place_symbol_and_update_state()
             return False
         elif game.ai_search_method == 'AB':
@@ -151,6 +151,7 @@ def debug_run():
     game = Game(player1, player2, search_method)
     while not game.is_game_over:
         # First player move AKA MAX
+        game.board_state.display_current_state()
         game.is_game_over = conduct_move(game, player1)
         game.board_state.display_current_state()
 
