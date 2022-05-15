@@ -84,22 +84,20 @@ def conduct_move(game: Game, player: Player):
         # TODO call respective algorithm
         print("call function to conduct AI move")
         if game.ai_search_method == 'MM':
-            # TODO call algorithm to conduct ai move, return statements in if else are temp
             # make algo object
             plan_move = Minimax(game.board_state, player.player_num)
-            # call game.board_state.place_symbol_and_update_state()
-            return False
+            game.board_state.place_symbol_and_update_state(plan_move.the_move_chosen, player.player_id)
         elif game.ai_search_method == 'AB':
             # TODO call algorithm to conduct ai move
+            return False  # temp return
             # make algo object
             # call game.board_state.place_symbol_and_update_state()
-            return False
         # TODO implement block below once at least one algo is ready for testing
-        # call game_over_flag = len(game.board_state.available_indexes)
-        # if game_over_flag == 0:
-            # return True
-        # else:
-            # return False
+        game_over_flag = len(game.board_state.available_indexes)
+        if game_over_flag == 0:
+            return True
+        else:
+            return False
 
 
 def run():
