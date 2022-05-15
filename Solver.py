@@ -21,7 +21,7 @@ class Node:
         if tree_depth >= depth:
             self.is_leaf = True
         else:
-            self.tree = self.add_children()
+            self.tree = self.add_children()  # TODO could assign parents utility after this line
         if self.is_leaf and self.parent is not None:
             self.utility_value = set_heuristic_value(self, 1)  # TODO temp treating as MAX unless I find a better way
         print("Is leaf: ", self.is_leaf)
