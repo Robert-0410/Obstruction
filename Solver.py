@@ -15,18 +15,21 @@ class Node:
         self.tree = self.add_children()
 
     def add_children(self):
+        print("Called add_children()")
         output = list()
         output.append(self)
         potential_moves = copy.deepcopy(self.node_state.available_indexes)
-        for i in range(self.branching_factor):
+        current_index = 1
+        while len(potential_moves) != 0:
             current = copy.deepcopy(self.node_state)
             # get input to update state
             index = potential_moves.pop()
             move = get_key_to_index(index)
             # make move to update current
-            current.place_symbol_and_update_state(move, '-')
+            current.place_symbol_and_update_state(move, '/')
             current.display_current_state()
-            output[i + 1] = Node(current)
+            output[current_index] = Node(current)
+            current_index += 1
         return output
 
 
