@@ -49,6 +49,7 @@ class Node:
             self.is_leaf = True
         return output
 
+    # TODO: make alpha beta pruning version of this function that removes any repeated nodes with the same utility
     def grab_utility_value_from_children(self):
         output = 0
         for i in self.tree:
@@ -74,7 +75,13 @@ class Minimax:
         self.the_move_chosen = self.root.move_to
 
 
-# TODO implement minimax with alpha-beta pruning
+# TODO make changes for AlphaBeta
+class AlphaBetaPruning:
+
+    def __init__(self, state: State, player: int):
+        self.root = Node(state, 0, None, None)
+        self.player = player
+        self.the_move_chosen = self.root.move_to
 
 
 def set_heuristic_value(node: Node, player):
