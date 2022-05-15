@@ -9,10 +9,18 @@ depth = 2
 # TODO implement a Node class to be used in the Game tree
 class Node:
 
-    def __init__(self, state: State):
+    def __init__(self, state: State, tree_depth: int):
         self.node_state = copy.deepcopy(state)
         self.branching_factor = len(self.node_state.available_indexes)
-        self.tree = self.add_children()
+        self.tree_depth = tree_depth
+        self.is_leaf = False
+        if tree_depth >= depth:
+            self.is_leaf = True
+        else:
+            self.tree = self.add_children()
+        print(self.is_leaf)
+        print(self.tree_depth)
+        print("Finished a Node()")
 
     def add_children(self):
         print("Called add_children()")
@@ -28,8 +36,11 @@ class Node:
             # make move to update current
             current.place_symbol_and_update_state(move, '/')
             current.display_current_state()
-            output[current_index] = Node(current)
+            output.append(Node(current, self.tree_depth + 1))
+            print("moving to next child")
             current_index += 1
+        if len(potential_moves) == 0:
+            self.is_leaf = True
         return output
 
 
@@ -37,7 +48,7 @@ class Node:
 class Minimax:
 
     def __init__(self, state: State, player: int):
-        self.root = Node(state)
+        self.root = Node(state, 0)
         self.player = player
         #self.game_tree = self.fill_game_tree()  # need method to fill the game tree
         # TODO set an attribute that calls a method returns the correct format to pass to update state in Tester.py
