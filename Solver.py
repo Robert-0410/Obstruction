@@ -4,6 +4,14 @@ from Board import State, get_key_to_index
 
 # Foreshadowing depth for the AI player has
 depth = 2
+nodes_expanded = 0
+
+
+def add_node_count():
+    nodes_expanded += 1
+
+def subtract_node_count():
+    nodes_expanded -= 1
 
 
 # Node class to be used in the Game tree
@@ -44,6 +52,7 @@ class Node:
             # make move to update current
             current.place_symbol_and_update_state(move, '/')
             output.append(Node(current, self.tree_depth + 1, self, move))
+            nodes_expanded = nodes_expanded + 1
             current_index += 1
         if len(potential_moves) == 0:
             self.is_leaf = True
@@ -56,6 +65,16 @@ class Node:
             if output < i.utility_value:
                 output = i.utility_value
         return output
+
+    def grab_utility_from_children_ab(self):
+        output = 0
+        for i in self.tree:
+            if output < i.utility_value:
+                output = i.utility_value
+
+            if output == i.utility_value:
+                self.tree.remove(i)
+                nodes_expanded = nodes_expanded - 1
 
     def grab_move(self):
         self.tree.pop(0)
