@@ -1,6 +1,5 @@
 # Connects Board and Solver to run Obstruction
 
-# TODO start here by taking command line arguments and set up the move sequence with single action AI outputting "Moved"
 import sys
 import console as console
 from Board import State, get_mapping_to_index
@@ -40,7 +39,7 @@ def assign_player_id(player: int):
     return output
 
 
-# Verify human input is correct TODO need to check for letters, currently breaks with input such as lkdfh
+# Verify human input is correct TODO need to check for letters, currently breaks with input such as 'lkdfh'
 def verify_human_input(human_input: list, game: Game):
     if len(human_input) > 2:
         return False
@@ -81,8 +80,7 @@ def conduct_move(game: Game, player: Player):
         else:
             return False
     else:
-        # TODO call respective algorithm
-        print("call function to conduct AI move")
+
         if game.ai_search_method == 'MM':
             # make algo object
             plan_move = Minimax(game.board_state, player.player_num)
@@ -92,7 +90,7 @@ def conduct_move(game: Game, player: Player):
             return False  # temp return
             # make algo object
             # call game.board_state.place_symbol_and_update_state()
-        # TODO implement block below once at least one algo is ready for testing
+
         game_over_flag = len(game.board_state.available_indexes)
         if game_over_flag == 0:
             return True
@@ -149,16 +147,26 @@ def debug_run():
     player1 = Player(1, False)  # False means not AI
     player2 = Player(2, True)
 
+    # TODO code below will be in run() once the program is complete
     game = Game(player1, player2, search_method)
+    player1_won = False
     while not game.is_game_over:
         # First player move AKA MAX
+        print("Player 1's turn")
         game.board_state.display_current_state()
         game.is_game_over = conduct_move(game, player1)
         game.board_state.display_current_state()
 
+        # check to see if player 1 has won the game
+        if game.is_game_over:
+            player1_won = True
+            continue
+        print("Player 2's turn")
         # Second player move AKA MIN
         game.is_game_over = conduct_move(game, player2)
         game.board_state.display_current_state()
+
+    # TODO: implement termination code using the boolean player1_won
 
 
 # run()

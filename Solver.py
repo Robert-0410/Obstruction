@@ -21,11 +21,11 @@ class Node:
         if tree_depth >= depth:
             self.is_leaf = True
         else:
-            self.tree = self.add_children()  # TODO could assign parents utility after this line
+            self.tree = self.add_children()
             self.utility_value = self.grab_utility_value_from_children()
 
         if self.is_leaf and self.parent is not None:
-            self.utility_value = set_heuristic_value(self, 1)  # TODO temp treating as MAX unless I find a better way
+            self.utility_value = set_heuristic_value(self, 1)
         # set the move that the AI would take
         if self.parent is None:
             # from root find out where roots utility value came from and assign that move the move to take
@@ -43,7 +43,6 @@ class Node:
             move = get_key_to_index(index)
             # make move to update current
             current.place_symbol_and_update_state(move, '/')
-            current.display_current_state()
             output.append(Node(current, self.tree_depth + 1, self, move))
             current_index += 1
         if len(potential_moves) == 0:
@@ -60,10 +59,8 @@ class Node:
     def grab_move(self):
         self.tree.pop(0)
         root_util = self.utility_value
-        node_to_move = None
         for i in self.tree:
             if root_util == i.utility_value:
-                node_to_move = i  # TODO delete node_to_move if not needed
                 break
         return copy.deepcopy(i.move)
 
@@ -80,7 +77,6 @@ class Minimax:
 # TODO implement minimax with alpha-beta pruning
 
 
-# TODO might have to take in a Node object instead
 def set_heuristic_value(node: Node, player):
     flag = node.branching_factor
     if flag == 0:

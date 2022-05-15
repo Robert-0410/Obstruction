@@ -1,7 +1,6 @@
 # Models the game board and pieces that compose it
 
 # Representation of the actual game state for the game of obstruction.
-import copy
 
 
 class State:
