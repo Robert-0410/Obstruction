@@ -9,17 +9,25 @@ depth = 2
 # TODO implement a Node class to be used in the Game tree
 class Node:
 
-    def __init__(self, state: State, tree_depth: int):
+    def __init__(self, state: State, tree_depth: int, parent, move: str):
+        # TODO: need access to: the move, parent, player
+        self.parent = parent
+        self.move = move
         self.node_state = copy.deepcopy(state)
         self.branching_factor = len(self.node_state.available_indexes)
         self.tree_depth = tree_depth
         self.is_leaf = False
+        self.utility_value = 0
         if tree_depth >= depth:
             self.is_leaf = True
         else:
             self.tree = self.add_children()
-        print(self.is_leaf)
-        print(self.tree_depth)
+        if self.is_leaf and self.parent is not None:
+            self.utility_value = set_heuristic_value(self, 1)  # TODO temp treating as MAX unless I find a better way
+        print("Is leaf: ", self.is_leaf)
+        print("Node at depth: ", self.tree_depth)
+        print("Utility value: ", self.utility_value)
+        print("Move is: ", self.move)
         print("Finished a Node()")
 
     def add_children(self):
@@ -36,7 +44,7 @@ class Node:
             # make move to update current
             current.place_symbol_and_update_state(move, '/')
             current.display_current_state()
-            output.append(Node(current, self.tree_depth + 1))
+            output.append(Node(current, self.tree_depth + 1, self, move))
             print("moving to next child")
             current_index += 1
         if len(potential_moves) == 0:
@@ -48,22 +56,17 @@ class Node:
 class Minimax:
 
     def __init__(self, state: State, player: int):
-        self.root = Node(state, 0)
+        self.root = Node(state, 0, None, None)
         self.player = player
-        #self.game_tree = self.fill_game_tree()  # need method to fill the game tree
-        # TODO set an attribute that calls a method returns the correct format to pass to update state in Tester.py
-
-    #def fill_game_tree(self):
-    #    return []  # TODO temp return, needs the game tree as a list
-
+        # TODO attribute to access the actual move
 
 # TODO implement minimax with alpha-beta pruning
 
 
 # TODO might have to take in a Node object instead
-def set_heuristic_value(state: State, player):
-    num_of_available_spaces = len(state.available_indexes)
-    if num_of_available_spaces == 0:
+def set_heuristic_value(node: Node, player):
+    flag = node.branching_factor
+    if flag == 0:
         # winning case for MAX
         if player == 1:
             return 100
@@ -72,7 +75,7 @@ def set_heuristic_value(state: State, player):
             return -100
     # evaluate for max
     if player == 1:
-        return 1  # TODO temp return
+        return node.parent.branching_factor - flag  # TODO temp return
     # evaluate for MIN
     else:
         return -1  # TODO temp return; might be (prior spaces - current)
