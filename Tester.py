@@ -4,11 +4,11 @@ import sys
 import console as console
 from Board import State, get_mapping_to_index
 
-
 # Represents the participants of the game Obstruction
 from Solver import Minimax, AlphaBetaPruning
 
 
+# representation of the players that participate in the game
 class Player:
     def __init__(self, player: int, is_ai: bool):
         self.player_num = player
@@ -131,19 +131,41 @@ def run():
             player1 = Player(1, False)
             player2 = Player(2, True)
 
-            game = Game(player1, player2, search_method)
-            # TODO continue here getting to the point of proper move sequencing between players
-            while not game.is_game_over:
-                print("Entered while loop, line 90")
-                # ask for move, move method should return if player had a successful move to know if game should be
-                # terminated move should update game.is_game_over
-                game.is_game_over = conduct_move(game, player1)
-                game.is_game_over = conduct_move(game, player2)
+        game = Game(player1, player2, search_method)
+        player1_won = False
+        while not game.is_game_over:
+            # First player move AKA MAX
+            print("Player 1's turn")
+            game.board_state.display_current_state()
+            game.is_game_over = conduct_move(game, player1)
+            game.board_state.display_current_state()
+
+            # check to see if player 1 has won the game
+            if game.is_game_over:
+                player1_won = True
+                continue
+            print("Player 2's turn")
+            # Second player move AKA MIN
+            game.is_game_over = conduct_move(game, player2)
+            game.board_state.display_current_state()
+
+            if player1_won:
+                winner = "Player 1 Wins!"
+                print(winner)
+            else:
+                winner = "Player 2 Wins!"
+                print(winner)
+
+            # print to Readme.txt
+            file = open("Readme.txt", "a")
+            file.writelines(["\n", winner, " \n", "Algo: ", game.ai_search_method,
+                             "\n", "Expanded: ", str(game.total_nodes_expanded), "\n"])
+            file.close()
 
 
-# TODO if debug tool is needed call debug_mode() -> need to write still
+# debugging point of entry for the game
 def debug_run():
-    search_method = 'MM'
+    search_method = 'AB'
     player1 = Player(1, False)  # False means not AI
     player2 = Player(2, True)
 
@@ -172,14 +194,14 @@ def debug_run():
     else:
         winner = "Player 2 Wins!"
         print(winner)
-    print(game.total_nodes_expanded)
 
-    # TODO print to Readme.txt
+    # print to Readme.txt
     file = open("Readme.txt", "a")
     file.writelines(["\n", winner, " \n", "Algo: ", game.ai_search_method,
                      "\n", "Expanded: ", str(game.total_nodes_expanded), "\n"])
     file.close()
 
-# run()
 
-debug_run()
+run()
+
+#  debug_run()
