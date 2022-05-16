@@ -3,11 +3,10 @@
 import sys
 import console as console
 from Board import State, get_mapping_to_index
-# from Solver import Minimax
 
 
 # Represents the participants of the game Obstruction
-from Solver import Minimax
+from Solver import Minimax, AlphaBetaPruning
 
 
 class Player:
@@ -25,6 +24,7 @@ class Game:
         self.board_state = State()
         self.is_game_over = False
         self.ai_search_method = search_method
+        self.total_nodes_expanded = 0
 
 
 # assigns the character that player will use to occupy space on the game board, X is Max and O is Min
@@ -39,7 +39,7 @@ def assign_player_id(player: int):
     return output
 
 
-# Verify human input is correct TODO need to check for letters, currently breaks with input such as 'lkdfh'
+# Verify human input is correct
 def verify_human_input(human_input: list, game: Game):
     if len(human_input) > 2:
         return False
@@ -83,13 +83,13 @@ def conduct_move(game: Game, player: Player):
 
         if game.ai_search_method == 'MM':
             # make algo object
-            plan_move = Minimax(game.board_state, player.player_num)
+            plan_move = Minimax(game.board_state, player.player_num, 'MM')
             game.board_state.place_symbol_and_update_state(plan_move.the_move_chosen, player.player_id)
+            game.total_nodes_expanded += plan_move.total_expanded
         elif game.ai_search_method == 'AB':
-            # TODO call algorithm to conduct ai move
-            return False  # temp return
-            # make algo object
-            # call game.board_state.place_symbol_and_update_state()
+            plan_move = AlphaBetaPruning(game.board_state, player.player_num, 'AB')
+            game.board_state.place_symbol_and_update_state(plan_move.the_move_chosen, player.player_id)
+            game.total_nodes_expanded += plan_move.total_expanded
 
         game_over_flag = len(game.board_state.available_indexes)
         if game_over_flag == 0:
@@ -166,8 +166,19 @@ def debug_run():
         game.is_game_over = conduct_move(game, player2)
         game.board_state.display_current_state()
 
-    # TODO: implement termination code using the boolean player1_won
+    if player1_won:
+        winner = "Player 1 Wins!"
+        print(winner)
+    else:
+        winner = "Player 2 Wins!"
+        print(winner)
+    print(game.total_nodes_expanded)
 
+    # TODO print to Readme.txt
+    file = open("Readme.txt", "a")
+    file.writelines(["\n", winner, " \n", "Algo: ", game.ai_search_method,
+                     "\n", "Expanded: ", str(game.total_nodes_expanded), "\n"])
+    file.close()
 
 # run()
 

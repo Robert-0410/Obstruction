@@ -2,22 +2,31 @@
 import copy
 from Board import State, get_key_to_index
 
-# Foreshadowing depth for the AI player has
+
 depth = 2
 nodes_expanded = 0
 
 
+def get_nodes_expanded():
+    global nodes_expanded
+    return nodes_expanded
+
+
 def add_node_count():
+    global nodes_expanded
     nodes_expanded += 1
 
+
 def subtract_node_count():
+    global nodes_expanded
     nodes_expanded -= 1
 
 
 # Node class to be used in the Game tree
 class Node:
 
-    def __init__(self, state: State, tree_depth: int, parent, move: str):
+    def __init__(self, state: State, tree_depth: int, parent, move: str, algo: str):
+        self.algo = algo
         self.parent = parent
         self.move = move
         self.node_state = copy.deepcopy(state)
@@ -30,13 +39,15 @@ class Node:
             self.is_leaf = True
         else:
             self.tree = self.add_children()
-            self.utility_value = self.grab_utility_value_from_children()
+            if algo == 'MM':
+                self.utility_value = self.grab_utility_value_from_children()  # TODO logic for diff algos
+            elif algo == 'AB':
+                self.utility_value = self.grab_utility_from_children_ab()
 
         if self.is_leaf and self.parent is not None:
             self.utility_value = set_heuristic_value(self, 1)
         # set the move that the AI would take
         if self.parent is None:
-            # from root find out where roots utility value came from and assign that move the move to take
             self.move_to = self.grab_move()
 
     def add_children(self):
@@ -51,14 +62,13 @@ class Node:
             move = get_key_to_index(index)
             # make move to update current
             current.place_symbol_and_update_state(move, '/')
-            output.append(Node(current, self.tree_depth + 1, self, move))
-            nodes_expanded = nodes_expanded + 1
+            output.append(Node(current, self.tree_depth + 1, self, move, self.algo))
+            add_node_count()
             current_index += 1
         if len(potential_moves) == 0:
             self.is_leaf = True
         return output
 
-    # TODO: make alpha beta pruning version of this function that removes any repeated nodes with the same utility
     def grab_utility_value_from_children(self):
         output = 0
         for i in self.tree:
@@ -74,7 +84,8 @@ class Node:
 
             if output == i.utility_value:
                 self.tree.remove(i)
-                nodes_expanded = nodes_expanded - 1
+                subtract_node_count()
+        return output
 
     def grab_move(self):
         self.tree.pop(0)
@@ -88,19 +99,21 @@ class Node:
 # minimax with depth limited search
 class Minimax:
 
-    def __init__(self, state: State, player: int):
-        self.root = Node(state, 0, None, None)
+    def __init__(self, state: State, player: int, algo: str):
+        self.root = Node(state, 0, None, None, algo)
         self.player = player
         self.the_move_chosen = self.root.move_to
+        self.total_expanded = get_nodes_expanded()
 
 
-# TODO make changes for AlphaBeta
+# minimax with AlphaBeta pruning
 class AlphaBetaPruning:
 
-    def __init__(self, state: State, player: int):
-        self.root = Node(state, 0, None, None)
+    def __init__(self, state: State, player: int, algo: str):
+        self.root = Node(state, 0, None, None, algo)
         self.player = player
         self.the_move_chosen = self.root.move_to
+        self.total_expanded = get_nodes_expanded()
 
 
 def set_heuristic_value(node: Node, player):
@@ -114,7 +127,7 @@ def set_heuristic_value(node: Node, player):
             return -100
     # evaluate for max
     if player == 1:
-        return node.parent.branching_factor - flag  # TODO temp return
+        return node.parent.branching_factor - flag
     # evaluate for MIN
     else:
-        return -1  # TODO temp return; might be (prior spaces - current)
+        return -1
