@@ -1,14 +1,12 @@
 # Connects Board and Solver to run Obstruction
 
-# TODO start here by taking command line arguments and set up the move sequence with single action AI outputting "Moved"
 import sys
 import console as console
 from Board import State, get_mapping_to_index
-# from Solver import Minimax
 
 
 # Represents the participants of the game Obstruction
-from Solver import Minimax
+from Solver import Minimax, AlphaBetaPruning
 
 
 class Player:
@@ -26,6 +24,7 @@ class Game:
         self.board_state = State()
         self.is_game_over = False
         self.ai_search_method = search_method
+        self.total_nodes_expanded = 0
 
 
 # assigns the character that player will use to occupy space on the game board, X is Max and O is Min
@@ -40,7 +39,7 @@ def assign_player_id(player: int):
     return output
 
 
-# Verify human input is correct TODO need to check for letters, currently breaks with input such as lkdfh
+# Verify human input is correct
 def verify_human_input(human_input: list, game: Game):
     if len(human_input) > 2:
         return False
@@ -81,25 +80,22 @@ def conduct_move(game: Game, player: Player):
         else:
             return False
     else:
-        # TODO call respective algorithm
-        print("call function to conduct AI move")
+
         if game.ai_search_method == 'MM':
-            # TODO call algorithm to conduct ai move, return statements in if else are temp
             # make algo object
-            plan_move = Minimax(game.board_state, player.player_num)
-            # call game.board_state.place_symbol_and_update_state()
-            return False
+            plan_move = Minimax(game.board_state, player.player_num, 'MM')
+            game.board_state.place_symbol_and_update_state(plan_move.the_move_chosen, player.player_id)
+            game.total_nodes_expanded += plan_move.total_expanded
         elif game.ai_search_method == 'AB':
-            # TODO call algorithm to conduct ai move
-            # make algo object
-            # call game.board_state.place_symbol_and_update_state()
+            plan_move = AlphaBetaPruning(game.board_state, player.player_num, 'AB')
+            game.board_state.place_symbol_and_update_state(plan_move.the_move_chosen, player.player_id)
+            game.total_nodes_expanded += plan_move.total_expanded
+
+        game_over_flag = len(game.board_state.available_indexes)
+        if game_over_flag == 0:
+            return True
+        else:
             return False
-        # TODO implement block below once at least one algo is ready for testing
-        # call game_over_flag = len(game.board_state.available_indexes)
-        # if game_over_flag == 0:
-            # return True
-        # else:
-            # return False
 
 
 def run():
@@ -151,17 +147,38 @@ def debug_run():
     player1 = Player(1, False)  # False means not AI
     player2 = Player(2, True)
 
+    # TODO code below will be in run() once the program is complete
     game = Game(player1, player2, search_method)
+    player1_won = False
     while not game.is_game_over:
         # First player move AKA MAX
+        print("Player 1's turn")
         game.board_state.display_current_state()
         game.is_game_over = conduct_move(game, player1)
         game.board_state.display_current_state()
 
+        # check to see if player 1 has won the game
+        if game.is_game_over:
+            player1_won = True
+            continue
+        print("Player 2's turn")
         # Second player move AKA MIN
         game.is_game_over = conduct_move(game, player2)
         game.board_state.display_current_state()
 
+    if player1_won:
+        winner = "Player 1 Wins!"
+        print(winner)
+    else:
+        winner = "Player 2 Wins!"
+        print(winner)
+    print(game.total_nodes_expanded)
+
+    # TODO print to Readme.txt
+    file = open("Readme.txt", "a")
+    file.writelines(["\n", winner, " \n", "Algo: ", game.ai_search_method,
+                     "\n", "Expanded: ", str(game.total_nodes_expanded), "\n"])
+    file.close()
 
 # run()
 
